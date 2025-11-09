@@ -1,16 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Live matches with real streaming platform links
+// Live matches with FREE M3U8 streaming URLs
 const liveMatches = [
   {
     id: 1,
@@ -23,9 +21,9 @@ const liveMatches = [
     homeScore: 2,
     awayScore: 1,
     streamingLinks: [
-      { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=Manchester+United+vs+Manchester+City+live' },
-      { name: 'ESPN+', url: 'https://www.espnplus.com' },
-      { name: 'Sky Sports', url: 'https://www.skysports.com/watch/live' }
+      { name: 'ESPN+', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' },
+      { name: 'Sky Sports', url: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8', type: 'm3u8' },
+      { name: 'beIN Sports', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' }
     ]
   },
   {
@@ -39,21 +37,46 @@ const liveMatches = [
     homeScore: null,
     awayScore: null,
     streamingLinks: [
-      { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=Liverpool+vs+Arsenal+live' },
-      { name: 'ESPN+', url: 'https://www.espnplus.com' },
-      { name: 'BT Sport', url: 'https://www.btsport.com' }
+      { name: 'ESPN+', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' },
+      { name: 'BT Sport', url: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8', type: 'm3u8' },
+      { name: 'DAZN', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' }
+    ]
+  },
+  {
+    id: 3,
+    homeTeam: 'Real Madrid',
+    awayTeam: 'FC Barcelona',
+    date: new Date(Date.now() + 7200000).toISOString(),
+    status: 'SCHEDULED',
+    league: { id: 140, name: 'La Liga', country: 'Spain' },
+    venue: 'Santiago Bernabéu',
+    homeScore: null,
+    awayScore: null,
+    streamingLinks: [
+      { name: 'ESPN+', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' },
+      { name: 'La Liga+', url: 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8', type: 'm3u8' },
+      { name: 'beIN Sports', url: 'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8', type: 'm3u8' }
     ]
   }
 ];
 
 app.get('/api/status', (req, res) => {
-  res.json({ status: 'Backend running!', version: '2.0' });
+  res.json({ status: 'WSS Backend running with M3U8 streams!', version: '3.0' });
 });
 
 app.get('/api/matches', (req, res) => {
   res.json(liveMatches);
 });
 
+app.get('/api/matches/:id', (req, res) => {
+  const match = liveMatches.find(m => m.id === parseInt(req.params.id));
+  if (match) {
+    res.json(match);
+  } else {
+    res.status(404).json({ error: 'Match not found' });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`WSS Backend running on port ${PORT}`);
+  console.log(`WSS Backend running on port ${PORT} - M3U8 Streaming Enabled`);
 });
